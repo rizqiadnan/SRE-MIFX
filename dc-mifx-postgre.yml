@@ -1,0 +1,25 @@
+version: '3'
+
+name: 'mifx'
+
+services:
+  app:
+    image: rizqiadnan/mifx-apps:main
+    ports:
+      - "8080:80"
+    volumes:
+      - ./site:/var/www/html:ro
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: admin_user        # Full access user
+      POSTGRES_PASSWORD: admin_pass   # Password for full access user
+      POSTGRES_DB: sre                # Initial database
+    ports:
+      - "5432:5432"                   # Map PostgreSQL port to host
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data   # Persistent data
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf # Custom config
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # Initial SQL script
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
