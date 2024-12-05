@@ -1,0 +1,11 @@
+version: '3'
+
+name: 'mifx'
+
+services:
+  app:
+    image: rizqiadnan/mifx-apps:main
+    ports:
+      - "8080:80"
+    volumes:
+      - ./site:/var/www/html:ro
