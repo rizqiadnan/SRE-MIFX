@@ -1,0 +1,32 @@
+stages:
+  - build
+  - deploy
+
+# Variables
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+
+# Build Job
+build:
+  stage: build
+  script:
+    - echo "Building Docker image..."
+    - docker build -t $IMAGE_TAG .
+    - echo "Logging in to GitLab Container Registry..."
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - docker push $IMAGE_TAG
+  only:
+    changes:
+      - Dockerfile  # Trigger build only when Dockerfile changes
+
+# Deploy Job
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying application..."
+    - docker pull $IMAGE_TAG
+    - docker-compose up -d
+  only:
+    changes:
+      - Dockerfile       # Trigger deploy when Dockerfile changes
+      - docker-compose.yml  # Trigger deploy when docker-compose.yml changes
