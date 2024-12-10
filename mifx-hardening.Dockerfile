@@ -16,12 +16,13 @@ RUN apk add --no-cache \
     php81-xml \
     php81-zip
 
-# Add a non-root user
-RUN adduser -D -g '' www-data
+    # Add a non-root user
+    # Fix: dari yang sebelumnya tanpa primary group
+    RUN adduser -D -G www-data www-data
 
 # Adjust permissions
-RUN mkdir -p /var/www/html /run/nginx && \
-    chown -R www-data:www-data /var/www/html /run/nginx
+RUN mkdir -p /var/www/html /run/nginx /var/lib/nginx/tmp /var/log/nginx /var/lib/nginx/logs && \
+    chown -R www-data:www-data /var/www/html /run/nginx /var/log/php81 /var/log/nginx /var/lib/nginx
 
 # Copy configuration files
 COPY nginx.conf /etc/nginx/nginx.conf
